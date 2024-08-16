@@ -1,0 +1,130 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.crud-app-container {
+    display: grid;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: cyan;
+}
+
+.crud-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.crud-form input,
+.crud-form button {
+    margin: 5px;
+}
+
+.crud-form button {
+    width: 200px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 8rem 8rem 1fr 1fr 1fr 120px; /* Seis columnas */
+    gap: 1px;
+    padding: 0;
+    border: 0;
+}
+
+.grid-header {
+    padding: 10px;
+    background-color: #f4f4f4;
+    border: 3px solid #ddd;
+    text-align: center;
+    font-weight: bold;
+}
+
+.grid-item {
+    padding: 10px;
+    border: 3px solid #ddd;
+    text-align: center;
+    background-color: #fff;
+}
+
+@media (max-width: 600px) {
+    .grid-container {
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; /* Seis columnas iguales */
+        gap: 0;
+        padding: 0;
+        border: 0;
+    }
+}
+
+@media (max-width: 200px) {
+    .grid-container {
+        grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+    }
+
+    .grid-header {
+        display: none; /* Ocultar encabezados en pantallas pequeñas */
+    }
+
+    .grid-item {
+        display: block;
+        width: 100%;
+        /* position: absolute; */
+    }
+}
+
+/* OCULTA LAS TRES ULTIMAS COLUMNAS EN 370PX */
+@media (max-width: 370px) {
+    .grid-container {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .expanded-info {
+        grid-column: span 3;
+        min-height: 30em;
+    }
+    .expand-title {
+        border: 0;
+    }
+
+    .expand-content {
+        border: 0;
+    }
+    .plus-icon {
+        display: flex;
+        flex-direction: column-reverse;
+        font-size: 2em;
+        font-weight: bolder;
+        color: cyan;
+        cursor: pointer;
+        vertical-align: middle;
+    }
+}
+
+/* HIDE + PANTALLAS GRANDES */
+@media (min-width: 370px) {
+    .plus-icon {
+        display: none;
+    }
+    .expanded-info {
+        display: none;
+    }
+}
+
+/* HIDE FORM */
+@media (max-width: 370px) {
+    .crud-form {
+        display: none;
+    }
+    .grid-header2 {
+        display: none;
+    }
+    .grid-item2 {
+        display: none;
+    }
+}
