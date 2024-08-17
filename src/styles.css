@@ -11,7 +11,7 @@ body {
 .title {
     text-align: center;
     margin-bottom: 20px;
-    color: cyan;
+    color: skyblue;
 }
 
 .crud-form {
@@ -24,6 +24,9 @@ body {
 .crud-form input,
 .crud-form button {
     margin: 5px;
+    padding: 3px;
+    width: 230px;
+
 }
 
 .crud-form button {
@@ -32,7 +35,8 @@ body {
 
 .grid-container {
     display: grid;
-    grid-template-columns: 8rem 8rem 1fr 1fr 1fr 120px; /* Seis columnas */
+    grid-template-columns: 8rem 8rem 1fr 1fr 1fr 120px;
+    /* Seis columnas */
     gap: 1px;
     padding: 0;
     border: 0;
@@ -51,11 +55,14 @@ body {
     border: 3px solid #ddd;
     text-align: center;
     background-color: #fff;
+    /* max-width: min-content;
+    overflow: clip; */
 }
 
 @media (max-width: 600px) {
     .grid-container {
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; /* Seis columnas iguales */
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+        /* Seis columnas iguales */
         gap: 0;
         padding: 0;
         border: 0;
@@ -64,11 +71,12 @@ body {
 
 @media (max-width: 200px) {
     .grid-container {
-        grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+        grid-template-columns: 1fr;
     }
 
     .grid-header {
-        display: none; /* Ocultar encabezados en pantallas pequeñas */
+        display: none;
+        /* Ocultar encabezados en pantallas pequeñas */
     }
 
     .grid-item {
@@ -82,28 +90,37 @@ body {
 @media (max-width: 370px) {
     .grid-container {
         grid-template-columns: 1fr 1fr 1fr;
+        max-width: 97%;
+        margin: auto;
     }
 
-    .expanded-info {
-        grid-column: span 3;
-        min-height: 30em;
-    }
-    .expand-title {
-        border: 0;
+    .grid-item {
+        overflow: clip;
     }
 
-    .expand-content {
-        border: 0;
-    }
-    .plus-icon {
-        display: flex;
-        flex-direction: column-reverse;
-        font-size: 2em;
-        font-weight: bolder;
-        color: cyan;
-        cursor: pointer;
-        vertical-align: middle;
-    }
+}
+
+.expanded-info {
+    grid-column: span 3;
+    min-height: 40em;
+}
+
+.expand-title {
+    border: 0;
+}
+
+.expand-content {
+    border: 0;
+}
+
+.plus-icon {
+    display: flex;
+    flex-direction: column-reverse;
+    font-size: 2em;
+    font-weight: bolder;
+    color: skyblue;
+    cursor: pointer;
+    vertical-align: middle;
 }
 
 /* HIDE + PANTALLAS GRANDES */
@@ -111,6 +128,7 @@ body {
     .plus-icon {
         display: none;
     }
+
     .expanded-info {
         display: none;
     }
@@ -121,9 +139,11 @@ body {
     .crud-form {
         display: none;
     }
+
     .grid-header2 {
         display: none;
     }
+
     .grid-item2 {
         display: none;
     }

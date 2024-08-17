@@ -2,33 +2,33 @@
   {
     "id": 1,
     "date": "Lunes 02/22/2024",
-    "time": "11:11",
-    "place": "Punto de encuentro 1",
-    "servant": "Siervo 1",
+    "time": "09:00",
+    "place": "La Pinta y Espana",
+    "servant": "Juan Pérez",
     "territory": "Zona 1"
   },
   {
     "id": 2,
     "date": "Martes 12/30/2024",
-    "time": "22:22",
-    "place": "Punto de encuentro 2",
-    "servant": "Siervo 2",
-    "territory": "Zona 2"
+    "time": "10:00",
+    "place": "Publica",
+    "servant": "Ana García",
+    "territory": "Zona 3"
   },
   {
     "id": 3,
     "date": "Miórcoles 12/30/2024",
-    "time": "03:33",
-    "place": "Punto de encuentro 3",
-    "servant": "Siervo 3",
-    "territory": "Zona 3"
+    "time": "10:00",
+    "place": "Mitre y Uriarte",
+    "servant": "Pedrito Sans",
+    "territory": "Zona 4"
   },
   {
     "id": 4,
     "date": "Jueves 12/30/2024",
-    "time": "4:44",
-    "place": "Punto de encuentro 4",
-    "servant": "Siervo 4",
-    "territory": "Zona 4"
+    "time": "10:00",
+    "place": "Uriarte y Concejal Tribulato",
+    "servant": "Javier Gonzalez",
+    "territory": "Zona 5"
   }
 ]
