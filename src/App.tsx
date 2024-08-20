@@ -62,19 +62,30 @@ function CrudApp() {
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
         const formattedDate = formatDate(formData.date);
         const formattedTime = formatTime(formData.time);
 
+        // Crear un enlace de Google Maps a partir de la dirección
+        const googleMapsLink = createGoogleMapsLink(formData.place);
+
         const updatedData = isEditing
             ? data.map((item) =>
-                  item.id === formData.id ? {...formData, id: item.id, date: formattedDate, time: formattedTime} : item
+                  item.id === formData.id
+                      ? {...formData, id: item.id, date: formattedDate, time: formattedTime, place: googleMapsLink}
+                      : item
               )
-            : [...data, {...formData, id: Date.now(), date: formattedDate, time: formattedTime}];
+            : [...data, {...formData, id: Date.now(), date: formattedDate, time: formattedTime, place: googleMapsLink}];
 
         setData(updatedData);
         setIsEditing(false);
         localStorage.setItem("data", JSON.stringify(updatedData));
         localStorage.setItem("formData", JSON.stringify(formData));
+    };
+
+    const createGoogleMapsLink = (place: string): string => {
+        const formattedPlace = encodeURIComponent(place.trim());
+        return `https://www.google.com/maps/search/?api=1&query=${formattedPlace}`;
     };
 
     const handleEdit = (id: number) => {
@@ -108,7 +119,7 @@ function CrudApp() {
     };
 
     const revertDateFormat = (formattedDate: string) => {
-        const [dayMonthYear] = formattedDate.split(" ");
+        const [, dayMonthYear] = formattedDate.split(" ");
         const [day, month, year] = dayMonthYear.split("/");
         return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     };
@@ -186,6 +197,15 @@ function CrudApp() {
                             }`}
                         >
                             {item.place}
+                            <div
+                                className={`grid-item ${item.date.trim() === today ? "highlight" : ""} ${
+                                    expandedRowId === item.id ? "selected-row" : ""
+                                }`}
+                            >
+                                <a href={item.place} target="_blank" rel="noopener noreferrer">
+                                    Ver en Google Maps
+                                </a>
+                            </div>
                         </div>
                         <div className={`grid-item2 grid-item ${expandedRowId === item.id ? "selected-row" : ""}`}>
                             {item.servant}
