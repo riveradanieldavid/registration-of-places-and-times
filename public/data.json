@@ -1,39 +1,39 @@
 [
   {
     "id": 1,
-    "date": "Jueves 15/08/2024",
-    "time": "11:11",
-    "place": "Punto de encuentro 1",
+    "date": "Lunes 20/06/2024",
+    "time": "03:33",
+    "place": "La pinta y España",
     "servant": "Siervo 1",
     "territory": "Zona 1"
   },
   {
     "id": 2,
-    "date": "Viernes 16/08/2024",
+    "date": "Martes 20/08/2024",
     "time": "22:22",
-    "place": "Punto de encuentro 2",
+    "place": "San Jose y Isabel la Catolica",
     "servant": "Siervo 2",
     "territory": "Zona 2"
   },
   {
     "id": 3,
-    "date": "Sábado 17/08/2024",
-    "time": "03:33",
-    "place": "Punto de encuentro 3",
+    "date": "Miércoles 16/08/2024",
+    "time": "10:00",
+    "place": "España y Uriarte",
     "servant": "Siervo 3",
     "territory": "Zona 3"
   },
   {
     "id": 4,
-    "date": "Domingo 18/08/2024",
+    "date": "Jueves 18/08/2024",
     "time": "04:44",
-    "place": "Punto de encuentro 4",
+    "place": "Uriarte y Balbin",
     "servant": "Siervo 4",
     "territory": "Zona 4"
   },
   {
     "id": 5,
-    "date": "Jueves 15/08/2024",
+    "date": "Viernes 15/08/2024",
     "time": "11:11",
     "place": "Punto de encuentro 5",
     "servant": "Siervo 5",
@@ -41,7 +41,7 @@
   },
   {
     "id": 6,
-    "date": "Viernes 16/08/2024",
+    "date": "Domingo 16/08/2024",
     "time": "22:22",
     "place": "Punto de encuentro 6",
     "servant": "Siervo 6",
