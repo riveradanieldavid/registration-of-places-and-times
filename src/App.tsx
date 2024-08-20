@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import "./App.css";
 import "./styles.css";
 
-// Función principal que define la aplicación CRUD
+interface FormData {
+    id: number | null;
+    date: string;
+    time: string;
+    place: string;
+    servant: string;
+    territory: string;
+}
+
+interface DataItem extends FormData {
+    id: number;
+}
+
 function CrudApp() {
-    // ESTADOS
-    // Estado para almacenar la lista de datos
-    const [data, setData] = useState([]);
-    // Estado para manejar los datos del formulario
-    const [formData, setFormData] = useState({
+    const [data, setData] = useState<DataItem[]>([]);
+    const [formData, setFormData] = useState<FormData>({
         id: null,
         date: "",
         time: "",
@@ -16,69 +25,79 @@ function CrudApp() {
         servant: "",
         territory: "",
     });
-    // Estado para manejar si estamos en modo edición
-    const [isEditing, setIsEditing] = useState(false);
-    // Estado para manejar la fila expandida en el modo móvil
-    const [expandedRowId, setExpandedRowId] = useState(null);
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
 
-    // useEffect para cargar los datos desde un archivo JSON cuando el componente se monta
+    const today = new Date()
+    .toLocaleDateString("es-ES", {
+        weekday: "long",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    })
+    .replace(",", "")
+    .trim();
+
     useEffect(() => {
-        fetch("/data.json")
-        .then((response) => response.json())
-        .then((jsonData) => setData(jsonData))
-        .catch((err) => console.error("Error loading JSON:", err));
+        fetch("/registration-of-places-and-times/data.json")
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then((jsonData) => {
+            console.log("Datos cargados:", jsonData);
+            setData(jsonData);
+        })
+        .catch((err) => {
+            console.error("Error loading JSON:", err.message);
+        });
     }, []);
-    // FIN DEL useEffect
 
-    // Función para manejar los cambios en el formulario
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setFormData({...formData, [e.target.name]: e.target.value});
-        // Guardar los datos en el localStorage cada vez que se realiza un cambio en el formulario
         localStorage.setItem("formData", JSON.stringify({...formData, [e.target.name]: e.target.value}));
     };
-    // FIN DE handleChange
 
-    // Función para manejar el envío del formulario (Agregar o Actualizar)
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const formattedDate = formatDate(formData.date); // Formatear la fecha antes de guardarla
+        const formattedDate = formatDate(formData.date);
+        const formattedTime = formatTime(formData.time);
+
         const updatedData = isEditing
-            ? data.map((item) => (item.id === formData.id ? {...formData, date: formattedDate} : item))
-            : [...data, {...formData, id: Date.now(), date: formattedDate}];
+            ? data.map((item) =>
+                  item.id === formData.id ? {...formData, id: item.id, date: formattedDate, time: formattedTime} : item
+              )
+            : [...data, {...formData, id: Date.now(), date: formattedDate, time: formattedTime}];
+
         setData(updatedData);
         setIsEditing(false);
-        // Guardar los datos en el localStorage después de agregar o actualizar
         localStorage.setItem("data", JSON.stringify(updatedData));
         localStorage.setItem("formData", JSON.stringify(formData));
     };
-    // FIN DE handleSubmit
 
-    // Función para manejar la edición de un ítem (establecer los datos en el formulario)
-    const handleEdit = (id) => {
+    const handleEdit = (id: number) => {
         const itemToEdit = data.find((item) => item.id === id);
-        const originalDate = revertDateFormat(itemToEdit.date);
-        setFormData({...itemToEdit, date: originalDate});
-        setIsEditing(true);
+        if (itemToEdit) {
+            const originalDate = revertDateFormat(itemToEdit.date);
+            const originalTime = revertTimeFormat(itemToEdit.time);
+            setFormData({...itemToEdit, date: originalDate, time: originalTime});
+            setIsEditing(true);
+        }
     };
-    // FIN DE handleEdit
 
-    // Función para manejar la eliminación de un ítem de la lista
-    const handleDelete = (id) => {
+    const handleDelete = (id: number) => {
         const updatedData = data.filter((item) => item.id !== id);
         setData(updatedData);
-        // Actualizar el localStorage después de eliminar un ítem
         localStorage.setItem("data", JSON.stringify(updatedData));
     };
-    // FIN DE handleDelete
 
-    // Función para manejar la expansión de una fila en el modo móvil
-    const handleExpand = (id) => {
-        setExpandedRowId(expandedRowId === id ? null : id); // Alternar entre expandir y contraer
+    const handleExpand = (id: number) => {
+        setExpandedRowId(expandedRowId === id ? null : id);
     };
-    // FIN DE handleExpand
 
-    // Función para formatear la fecha en un formato amigable
-    const formatDate = (date) => {
+    const formatDate = (date: string) => {
         const daysOfWeek = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
         const dateObj = new Date(date);
         const dayName = daysOfWeek[dateObj.getDay()];
@@ -87,28 +106,31 @@ function CrudApp() {
         const year = dateObj.getUTCFullYear();
         return `${dayName} ${day}/${month < 10 ? `0${month}` : month}/${year}`;
     };
-    // FIN DE formatDate
 
-    // Función para revertir el formato de fecha a un formato adecuado para el input date
-    const revertDateFormat = (formattedDate) => {
-        const [dayName, dayMonthYear] = formattedDate.split(" ");
+    const revertDateFormat = (formattedDate: string) => {
+        const [dayMonthYear] = formattedDate.split(" ");
         const [day, month, year] = dayMonthYear.split("/");
         return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     };
-    // FIN DE revertDateFormat
 
-    // Renderizado del componente CrudApp
+    const formatTime = (time: string) => {
+        return time;
+    };
+
+    const revertTimeFormat = (formattedTime: string) => {
+        return formattedTime;
+    };
+
     return (
         <div className="crud-app-container">
             <h2 className="title">Salidas de predicación</h2>
             <form className="crud-form" onSubmit={handleSubmit}>
-                {/* Campos del formulario */}
                 <input type="date" name="date" value={formData.date} onChange={handleChange} required />
                 <input type="time" name="time" value={formData.time} onChange={handleChange} required />
                 <input
                     type="text"
                     name="place"
-                    placeholder="Lugar"
+                    placeholder="Punto de encuentro"
                     value={formData.place}
                     onChange={handleChange}
                     required
@@ -132,9 +154,6 @@ function CrudApp() {
                 <button type="submit">{isEditing ? "Actualizar" : "Agregar"}</button>
             </form>
 
-            {/* Contenedor de la cuadrícula de datos */}
-
-            {/* CABECERAS */}
             <div className="grid-container">
                 <div className="grid-header">Día</div>
                 <div className="grid-header">Hora</div>
@@ -142,32 +161,49 @@ function CrudApp() {
                 <div className="grid-header2 grid-header">Conductor</div>
                 <div className="grid-header2 grid-header">Territorio</div>
                 <div className="grid-header2 grid-header">Acciones</div>
-
-                {/* ITEMS DATOS */}
                 {data.map((item) => (
                     <React.Fragment key={item.id}>
-                        <div className="grid-item">
+                        <div
+                            className={`grid-item ${item.date.trim() === today ? "highlight" : ""} ${
+                                expandedRowId === item.id ? "selected-row" : ""
+                            }`}
+                        >
                             {item.date}
+                        </div>
+                        <div
+                            className={`grid-item ${item.date.trim() === today ? "highlight" : ""} ${
+                                expandedRowId === item.id ? "selected-row" : ""
+                            }`}
+                        >
+                            {formatTime(item.time)}
                             <span className="plus-icon" onClick={() => handleExpand(item.id)}>
-                                +
+                                {expandedRowId === item.id ? "-" : "+"}
                             </span>
                         </div>
-                        <div className="grid-item">{item.time}</div>
-                        <div className="grid-item">{item.place}</div>
-                        <div className="grid-item2 grid-item ">{item.servant}</div>
-                        <div className="grid-item2 grid-item ">{item.territory}</div>
-                        <div className="grid-item2 grid-item ">
+                        <div
+                            className={`grid-item ${item.date.trim() === today ? "highlight" : ""} ${
+                                expandedRowId === item.id ? "selected-row" : ""
+                            }`}
+                        >
+                            {item.place}
+                        </div>
+                        <div className={`grid-item2 grid-item ${expandedRowId === item.id ? "selected-row" : ""}`}>
+                            {item.servant}
+                        </div>
+                        <div className={`grid-item2 grid-item ${expandedRowId === item.id ? "selected-row" : ""}`}>
+                            {item.territory}
+                        </div>
+                        <div className={`grid-item2 grid-item ${expandedRowId === item.id ? "selected-row" : ""}`}>
                             <button onClick={() => handleEdit(item.id)}>Editar</button>
-                            <button onClick={() => handleDelete(item.id)}>Borrar</button>
+                            <button onClick={() => handleDelete(item.id)}>Eliminar</button>
                         </div>
 
-                        {/* Información expandida para modo móvil */}
                         {expandedRowId === item.id && (
-                            <div className="expanded-info">
-                                <div className="grid-header expand-title">Conductor</div>
-                                <div className="grid-item expand-content">{item.servant}</div>
-                                <div className="grid-header expand-title">Territorio</div>
-                                <div className="grid-item expand-content">{item.territory}</div>
+                            <div className="expanded-info selected-row">
+                                <div className="grid-header expand-title selected-row">Conductor</div>
+                                <div className="grid-item expand-content selected-row">{item.servant}</div>
+                                <div className="grid-header expand-title selected-row">Territorio</div>
+                                <div className="grid-item expand-content selected-row">{item.territory}</div>
                             </div>
                         )}
                     </React.Fragment>
@@ -178,4 +214,3 @@ function CrudApp() {
 }
 
 export default CrudApp;
-// FIN DE CrudApp

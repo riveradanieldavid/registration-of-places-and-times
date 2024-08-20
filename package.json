@@ -1,4 +1,5 @@
 {
+  "homepage": "https://riveradanieldavid.github.io/registration-of-places-and-times/",
   "name": "vite-react-typescript-starter",
   "private": true,
   "version": "0.0.0",
@@ -24,6 +25,7 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "gh": "^1.11.14",
+    "gh-pages": "^6.1.1",
     "globals": "^15.9.0",
     "pages": "^0.0.16",
     "typescript": "^5.5.3",

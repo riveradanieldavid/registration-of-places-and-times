@@ -1,0 +1,15 @@
+﻿npm install gh-pages --save-dev
+CREATE REPOSITORY
+"homepage": "https://riveradanieldavid.github.io/registration-of-places-and-times/",
+"predeploy": "npm run build",
+"deploy": "gh-pages -d dist"
+
+
+base: 'registration-of-places-and-times'
+git init
+git add .
+git commit -m 'deploying...'
+git branch -M main
+git remote add origin https://github.com/riveradanieldavid/registration-of-places-and-times.git
+git push -u origin main
+npm run deploy

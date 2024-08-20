@@ -45,14 +45,14 @@ body {
 .grid-header {
     padding: 10px;
     background-color: #f4f4f4;
-    border: 3px solid #ddd;
+    border: 1px solid #ddd;
     text-align: center;
     font-weight: bold;
 }
 
 .grid-item {
     padding: 10px;
-    border: 3px solid #ddd;
+    border: 1px solid #ddd;
     text-align: center;
     background-color: #fff;
     /* max-width: min-content;
@@ -86,8 +86,8 @@ body {
     }
 }
 
-/* OCULTA LAS TRES ULTIMAS COLUMNAS EN 370PX */
-@media (max-width: 370px) {
+/* OCULTA LAS TRES ULTIMAS COLUMNAS EN 400PX */
+@media (max-width: 400px) {
     .grid-container {
         grid-template-columns: 1fr 1fr 1fr;
         max-width: 97%;
@@ -116,7 +116,7 @@ body {
 .plus-icon {
     display: flex;
     flex-direction: column-reverse;
-    font-size: 2em;
+    font-size: 3em;
     font-weight: bolder;
     color: skyblue;
     cursor: pointer;
@@ -124,7 +124,7 @@ body {
 }
 
 /* HIDE + PANTALLAS GRANDES */
-@media (min-width: 370px) {
+@media (min-width: 400px) {
     .plus-icon {
         display: none;
     }
@@ -135,7 +135,7 @@ body {
 }
 
 /* HIDE FORM */
-@media (max-width: 370px) {
+@media (max-width: 400px) {
     .crud-form {
         display: none;
     }
@@ -147,4 +147,15 @@ body {
     .grid-item2 {
         display: none;
     }
+}
+
+/* RESALTAR DIA ACTUAL Y BACKGROUND DE FILA SELECCIONADA E INFO EXPANDIDA */
+.selected-row {
+    background-color: aliceblue;
+    /* Cambia a cualquier color que prefieras */
+}
+
+.highlight {
+    background-color: #ffeb3b !important;
+    /* Color para resaltar la fecha de hoy */
 }
