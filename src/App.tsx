@@ -310,6 +310,7 @@ function CrudApp() {
                 } ${expandedRowId === item.id ? "selected-row" : ""}`}
               >
                 {item.date}
+                {item.date.trim() === today ? <h3>HOY</h3> : ""}
               </div>
               <div
                 className={`grid-item ${item.date.trim() === today
