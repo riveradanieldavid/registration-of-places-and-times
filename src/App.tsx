@@ -1,5 +1,7 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import "./App.css";
+import territoryImageFull from "./assets/territoryImage.jpg";
+import territoryImagePhone from "./assets/territoryImagePhone.jpg";
 import "./styles.css";
 
 interface FormData {
@@ -29,6 +31,8 @@ function CrudApp() {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
   const [message, setMessage] = useState("");
+  const [imageSrc, setImageSrc] = useState(territoryImageFull);
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1200);
 
   const todaytiny = new Date()
     .toLocaleDateString("es-ES", {
@@ -62,6 +66,27 @@ function CrudApp() {
       });
   }, []);
 
+  // CONDICIONAL IMAGES PHONE OR DESKTOP
+  //   CONDICIONAL ZOOM SOLO EN 1200PX O MAS
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 700) {
+        setImageSrc(territoryImagePhone);
+      } else {
+        setImageSrc(territoryImageFull);
+      }
+      setIsLargeScreen(window.innerWidth >= 1200);
+    };
+    // Set the initial image and screen size based on the current window width
+    handleResize();
+    // Add event listener for window resize
+    window.addEventListener("resize", handleResize);
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     localStorage.setItem(
@@ -72,13 +97,14 @@ function CrudApp() {
 
   // Función para extraer solo las calles ingresadas
   const extractStreets = (place: string): string => {
-    console.log("Entrada a extractStreets:", place); // Verifica qué está recibiendo
+    console.log("Entrada a extractStreets:", place);
     try {
       const url = new URL(place);
       const query = url.searchParams.get("query");
-      console.log("Calles extraídas:", query); // Verifica el resultado
+      console.log("Calles extraídas:", query);
       return query || "No se encontró información";
     } catch (error) {
+      console.error("Error al extraer calles:", error);
       return place;
     }
   };
@@ -88,18 +114,18 @@ function CrudApp() {
     const formattedPlace = encodeURIComponent(place);
     return `https://www.google.com/maps/search/?api=1&query=${formattedPlace}+, San Miguel, Buenos Aires, Argentina`;
   };
+
   const showMessage = (type: string) => {
-    const messages = {
-      updated: "Item actualizado...",
-      added: "Item agregado..."
+    const messages: { [key: string]: string } = {
+      updated: "Actualizando Item...",
+      added: "Agregando Item..."
     };
-
     setMessage(messages[type]);
-
     setTimeout(() => {
-      setMessage(""); // Oculta el mensaje después de 3 segundos
-    }, 6000);
+      setMessage("");
+    }, 700);
   };
+
   // Función para manejar el envío del formulario
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -111,18 +137,17 @@ function CrudApp() {
     const googleMapsLink = createGoogleMapsLink(formData.place);
 
     const updatedData = isEditing
-      ? data.map(
-          item =>
-            item.id === formData.id
-              ? {
-                  ...formData,
-                  id: item.id,
-                  date: formattedDate,
-                  time: formattedTime,
-                  place: formData.place,
-                  placeLink: googleMapsLink
-                }
-              : item
+      ? data.map(item =>
+          item.id === formData.id
+            ? {
+                ...formData,
+                id: item.id,
+                date: formattedDate,
+                time: formattedTime,
+                place: formData.place,
+                placeLink: googleMapsLink
+              }
+            : item
         )
       : [
           ...data,
@@ -239,9 +264,59 @@ function CrudApp() {
     return formattedTime;
   };
 
+  // zoom image
+  const moveZoom = (event: React.MouseEvent<HTMLDivElement>) => {
+    const zoomArea = document.querySelector(".zoom-area") as HTMLElement;
+    const imageFull = document.querySelector(".imageFull") as HTMLElement;
+    const contenedor = document.querySelector(
+      ".territoryImageFull"
+    ) as HTMLElement;
+
+    const contenedorRect = contenedor.getBoundingClientRect();
+    const x = event.clientX - contenedorRect.left - zoomArea.offsetWidth / 2;
+    const y = event.clientY - contenedorRect.top - zoomArea.offsetHeight / 2;
+
+    // Mover el zoom-area
+    zoomArea.style.left =
+      Math.max(0, Math.min(contenedorRect.width - zoomArea.offsetWidth, x)) +
+      "px";
+    zoomArea.style.top =
+      Math.max(0, Math.min(contenedorRect.height - zoomArea.offsetHeight, y)) +
+      "px";
+
+    // Calcular el porcentaje de la posición del mouse
+    const percentX = (x / contenedorRect.width) * 100;
+    const percentY = (y / contenedorRect.height) * 100;
+
+    // Aplicar el zoom y mover la imagen en consecuencia
+    imageFull.style.transformOrigin = `${percentX}% ${percentY}%`;
+    imageFull.style.transform = "scale(2)";
+  };
+
+  const handleMouseOut = () => {
+    const imageFull = document.querySelector(".imageFull") as HTMLElement;
+    imageFull.style.transform = "scale(1)";
+  };
+
   return (
     <div className="crud-app-container">
       <h2 className="title">Salidas de predicación</h2>
+
+      <div
+        className="territoryImageFull"
+        onMouseMove={isLargeScreen ? moveZoom : undefined} // Solo activar en pantallas grandes
+        onMouseOut={isLargeScreen ? handleMouseOut : undefined} // Solo activar en pantallas grandes
+      >
+        <div className="zoom">
+          <img
+            className="imageFull"
+            src={imageSrc} // Muestra la imagen seleccionada
+            alt="Territorio de predicación"
+          />
+        </div>
+        <div className="zoom-area"></div>
+      </div>
+
       <form className="crud-form" onSubmit={handleSubmit}>
         <input
           type="date"
@@ -281,15 +356,17 @@ function CrudApp() {
           onChange={handleChange}
           required
         />
-        <button type="submit">
+
+        <button
+          type="submit"
+          className={`submit-button ${message ? "hidden" : ""}`}
+        >
           {isEditing ? "Actualizar" : "Agregar"}
         </button>
-        {message &&
-          <span className="message show">
-            {message}
-          </span>}
+        <span className={`message ${message ? "show" : "hidden"}`}>
+          {message}
+        </span>
       </form>
-
       <div className="grid-container">
         <div className="grid-header">Día</div>
         <div className="grid-header">Hora</div>
@@ -304,18 +381,16 @@ function CrudApp() {
           return (
             <React.Fragment key={item.id}>
               <div
-                className={`grid-item ${item.date.trim() === today
-                  ? "highlight"
-                  : "" // DIA
+                className={`grid-item ${
+                  item.date.trim() === today ? "highlight" : "" // DIA
                 } ${expandedRowId === item.id ? "selected-row" : ""}`}
               >
                 {item.date}
                 {item.date.trim() === today ? <h3>HOY</h3> : ""}
               </div>
               <div
-                className={`grid-item ${item.date.trim() === today
-                  ? "highlight"
-                  : "" // HORA
+                className={`grid-item ${
+                  item.date.trim() === today ? "highlight" : "" // HORA
                 } ${expandedRowId === item.id ? "selected-row" : ""}`}
               >
                 {formatTime(item.time)}
@@ -327,9 +402,8 @@ function CrudApp() {
                 </span>
               </div>
               <div
-                className={`grid-item ${item.date.trim() === today
-                  ? "highlight"
-                  : "" // PUNTO DE ENCUENTRO
+                className={`grid-item ${
+                  item.date.trim() === today ? "highlight" : "" // PUNTO DE ENCUENTRO
                 } ${expandedRowId === item.id ? "selected-row" : ""}`}
               >
                 {/* Aquí renderizas solo las calles */}
@@ -346,25 +420,22 @@ function CrudApp() {
                 </a>
               </div>
               <div
-                className={`grid-item2 grid-item ${item.date.trim() === today
-                  ? "highlight"
-                  : "" // CONDUCTOR
+                className={`grid-item2 grid-item ${
+                  item.date.trim() === today ? "highlight" : "" // CONDUCTOR
                 } ${expandedRowId === item.id ? "selected-row" : ""}`}
               >
                 {item.servant}
               </div>
               <div
-                className={`grid-item2 grid-item ${item.date.trim() === today
-                  ? "highlight"
-                  : "" // TERRITORIO
+                className={`grid-item2 grid-item ${
+                  item.date.trim() === today ? "highlight" : "" // TERRITORIO
                 } ${expandedRowId === item.id ? "selected-row" : ""}`}
               >
                 {item.territory}
               </div>
               <div
-                className={`grid-item2 grid-item ${item.date.trim() === today
-                  ? "highlight"
-                  : "" // ACCIONES
+                className={`buttons-edit grid-item2 grid-item ${
+                  item.date.trim() === today ? "highlight" : "" // ACCIONES
                 } ${expandedRowId === item.id ? "selected-row" : ""}`}
               >
                 <button onClick={() => handleEdit(item.id)}>Editar</button>
@@ -372,49 +443,45 @@ function CrudApp() {
               </div>
 
               {/* EXPANDED INFO */}
-              {expandedRowId === item.id &&
+              {expandedRowId === item.id && (
                 <div
-                  className={`expanded-info selected-row ${item.date.trim() ===
-                  today
-                    ? "highlight"
-                    : ""}`}
+                  className={`expanded-info selected-row ${
+                    item.date.trim() === today ? "highlight" : ""
+                  }`}
                 >
                   {/* CONDUCTOR */}
                   <div
-                    className={`grid-header-expanded grid-header ${item.date.trim() ===
-                    today
-                      ? "highlight"
-                      : ""}`}
+                    className={`grid-header-expanded grid-header ${
+                      item.date.trim() === today ? "highlight" : ""
+                    }`}
                   >
                     Conductor
                   </div>
                   <div
-                    className={`grid-item expand-content selected-row grid-header ${item.date.trim() ===
-                    today
-                      ? "highlight"
-                      : ""}`}
+                    className={`grid-item expand-content selected-row grid-header ${
+                      item.date.trim() === today ? "highlight" : ""
+                    }`}
                   >
                     {item.servant}
                   </div>
                   {/* TERRITORIO */}
                   <div
-                    className={`grid-header-expanded grid-header ${item.date.trim() ===
-                    today
-                      ? "highlight"
-                      : ""}`}
+                    className={`grid-header-expanded grid-header ${
+                      item.date.trim() === today ? "highlight" : ""
+                    }`}
                   >
                     Territorio
                   </div>
                   <div
-                    className={`grid-item expand-content selected-row grid-header ${item.date.trim() ===
-                    today
-                      ? "highlight"
-                      : ""}`}
+                    className={`grid-item expand-content selected-row grid-header ${
+                      item.date.trim() === today ? "highlight" : ""
+                    }`}
                   >
                     {item.territory}
                   </div>
                   {/* EXPANDED INFO */}
-                </div>}
+                </div>
+              )}
             </React.Fragment>
           );
         })}
