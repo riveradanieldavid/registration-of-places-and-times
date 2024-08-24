@@ -1,9 +1,12 @@
+// Importaciones
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import "./App.css";
 import territoryImageFull from "./assets/territoryImage.jpg";
 import territoryImagePhone from "./assets/territoryImagePhone.jpg";
 import "./styles.css";
 
+// INTERFACES
+// Definición de la interfaz para los datos del formulario
 interface FormData {
   id: number | null;
   date: string;
@@ -13,13 +16,19 @@ interface FormData {
   territory: string;
 }
 
+// Definición de la interfaz para los ítems de datos
 interface DataItem extends FormData {
   id: number;
   placeLink: string; // Enlace generado a Google Maps
 }
 
+// FUNCIONES PRINCIPALES
+// Función principal del componente CrudApp
 function CrudApp() {
+  // ESTADOS
+  // Estado para almacenar los datos
   const [data, setData] = useState<DataItem[]>([]);
+  // Estado para almacenar los datos del formulario
   const [formData, setFormData] = useState<FormData>({
     id: null,
     date: "",
@@ -28,12 +37,19 @@ function CrudApp() {
     servant: "",
     territory: ""
   });
+  // Estado para determinar si está en modo edición
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  // Estado para manejar la fila expandida
   const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
+  // Estado para mostrar mensajes
   const [message, setMessage] = useState("");
+  // Estado para la fuente de imagen
   const [imageSrc, setImageSrc] = useState(territoryImageFull);
+  // Estado para manejar el tamaño de pantalla
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1200);
 
+  // VARIABLES Y FUNCIONES AUXILIARES
+  // Obtener la fecha actual formateada
   const todaytiny = new Date()
     .toLocaleDateString("es-ES", {
       weekday: "long",
@@ -47,6 +63,9 @@ function CrudApp() {
     todaytiny.charAt(0).toUpperCase() + todaytiny.slice(1).toLowerCase();
 
   console.log(today);
+
+  // EFECTOS SECUNDARIOS
+  // Efecto para cargar datos del archivo JSON
   useEffect(() => {
     fetch("/registration-of-places-and-times/data.json")
       .then(response => {
@@ -68,7 +87,7 @@ function CrudApp() {
 
   // CONDICIONAL IMAGES PHONE OR DESKTOP
   //   CONDICIONAL ZOOM SOLO EN 1200PX O MAS
-
+  // Efecto para manejar el cambio de imagen y tamaño de pantalla
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 700) {
@@ -87,10 +106,15 @@ function CrudApp() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  // MANEJADORES DE EVENTOS
+  // Manejar cambios en el formulario
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     localStorage.setItem(
       "formData",
+
+      // Función para extraer solo las calles ingresadas
       JSON.stringify({ ...formData, [e.target.name]: e.target.value })
     );
   };
@@ -115,6 +139,7 @@ function CrudApp() {
     return `https://www.google.com/maps/search/?api=1&query=${formattedPlace}+, San Miguel, Buenos Aires, Argentina`;
   };
 
+  // Función para mostrar mensajes de acción
   const showMessage = (type: string) => {
     const messages: { [key: string]: string } = {
       updated: "Actualizando Item...",
@@ -175,6 +200,7 @@ function CrudApp() {
     // Aquí iría el código para agregar o actualizar el item...
   };
 
+  // Función para manejar la edición de un ítem
   const handleEdit = (id: number) => {
     const itemToEdit = data.find(item => item.id === id);
     if (itemToEdit) {
@@ -190,6 +216,7 @@ function CrudApp() {
     }
   };
 
+  // Función para manejar la eliminación de un ítem
   const handleDelete = (id: number) => {
     const itemToDelete = data.find(item => item.id === id);
 
@@ -206,10 +233,12 @@ function CrudApp() {
     }
   };
 
+  // Función para manejar la expansión de una fila
   const handleExpand = (id: number) => {
     setExpandedRowId(expandedRowId === id ? null : id);
   };
 
+  // Función para formatear la fecha
   const formatDate = (date: string) => {
     try {
       const daysOfWeek = [
@@ -238,6 +267,7 @@ function CrudApp() {
         dayName.charAt(0).toUpperCase() + dayName.slice(1).toLowerCase();
       console.log("Nombre del día capitalizado:", capitalizedDayName);
 
+      // Función para formatear la hora
       const formattedDate = `${capitalizedDayName} ${day
         .toString()
         .padStart(2, "0")}/${month.toString().padStart(2, "0")}/${year}`;
@@ -250,12 +280,14 @@ function CrudApp() {
     }
   };
 
+  // Función para revertir el formato de la hora
   const revertDateFormat = (formattedDate: string) => {
     const [, dayMonthYear] = formattedDate.split(" ");
     const [day, month, year] = dayMonthYear.split("/");
     return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   };
 
+  // Función para formatear la hora
   const formatTime = (time: string) => {
     return time;
   };
