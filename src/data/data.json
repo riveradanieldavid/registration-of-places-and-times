@@ -1,33 +1,33 @@
 [
   {
     "id": 1,
-    "date": "Jueves 15/08/2024",
+    "date": "Miércoles 28/08/2024",
     "time": "11:11",
-    "place": "Punto de encuentro 1",
+    "place": "España y Uriarte",
     "servant": "Siervo 1",
     "territory": "Zona 1"
   },
   {
     "id": 2,
-    "date": "Viernes 16/08/2024",
+    "date": "Jueves 29/08/2024",
     "time": "22:22",
-    "place": "Punto de encuentro 2",
+    "place": "San Jose y Las Tres Marias",
     "servant": "Siervo 2",
     "territory": "Zona 2"
   },
   {
     "id": 3,
-    "date": "Sabado 17/08/2024",
+    "date": "Viernes 30/08/2024",
     "time": "03:33",
-    "place": "Punto de encuentro 3",
+    "place": "Balbin y Maestro Ferreira",
     "servant": "Siervo 3",
     "territory": "Zona 3"
   },
   {
     "id": 4,
-    "date": "Domingo18/08/2024",
+    "date": "Sábado 31/08/2024",
     "time": "04:44",
-    "place": "Punto de encuentro 4",
+    "place": "Plaza Calle Uno",
     "servant": "Siervo 4",
     "territory": "Zona 4"
   }
