@@ -29,7 +29,7 @@ interface DataItem extends FormData {
 }
 
 // FUNCION PRINCIPAL
-const DatesComponent: React.FC<DatesComponentProps> = ({ items, onEdit, onDelete }) => {
+const DatesComponent: React.FC<DatesComponentProps> = ({ items, onEdit, onDelete, isEditing, editingItemId }) => {
     // ESTADOS
     // Estado para manejar la fila expandida
     const [expandedRowId, setExpandedRowId] = useState<number | null>(null)
@@ -111,7 +111,7 @@ const DatesComponent: React.FC<DatesComponentProps> = ({ items, onEdit, onDelete
         // Verifica si 'place' tiene al menos el formato mínimo de una URL
         if (!place || !place.includes('?')) {
             // Si 'place' no parece una URL válida, devuelve el valor original o un mensaje adecuado
-            return 'No se encontró información';
+            return place;
         }
         try {
             const url = new URL(place);
@@ -209,7 +209,9 @@ const DatesComponent: React.FC<DatesComponentProps> = ({ items, onEdit, onDelete
                                 className={`buttons-edit grid-item2 grid-item ${item.date.trim() === today ? 'highlight' : ''
                                     } ${expandedRowId === item.id ? 'selected-row' : ''}`}
                             >
-                                <button className='editionButton' onClick={() => onEdit(item.id)}>Editar</button>
+                                <button className='editionButton' onClick={() => onEdit(item.id)}>
+                                    {isEditing && editingItemId === item.id ? 'USTED ESTA EDITANDO ESTE ITEM' : 'Editar'}
+                                </button>
                                 <button className='editionButton' onClick={() => onDelete(item.id)}>Eliminar</button>
                             </div>
                             {/* ITEMS EXPANDIBLES EN MODO TELEFONO*/}

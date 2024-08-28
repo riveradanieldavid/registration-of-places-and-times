@@ -27,8 +27,7 @@ interface DataItem extends FormData {
 }
 
 // FUNCION PRINCIPAL
-function CrudApp() {
-
+const CrudApp = () => {
 
   // ESTADOS
   // Estado para almacenar los datos
@@ -50,6 +49,7 @@ function CrudApp() {
   const [imageSrc, setImageSrc] = useState(territoryImageFull)
   // Estado para manejar el tamaño de pantalla
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1200)
+  const [editingItemId, setEditingItemId] = useState<number | null>(null); // ID del ítem en edición
 
   // EFECTOS SECUNDARIOS
   // Efecto para cargar datos del archivo JSON
@@ -151,6 +151,8 @@ function CrudApp() {
   }
   // Función para manejar la edición de un ítem
   const handleEdit = (id: number) => {
+    setEditingItemId(id); // Establece la ID del ítem en edición
+    // Aquí iría tu lógica adicional para editar el ítem...
     const itemToEdit = data.find(item => item.id === id)
     if (itemToEdit) {
       const originalDate = revertDateFormat(itemToEdit.date)
@@ -172,7 +174,7 @@ function CrudApp() {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isEditing]);
+  }, [editingItemId]);
 
 
   // Función para manejar la eliminación de un ítem
@@ -262,7 +264,7 @@ function CrudApp() {
     // Verifica si 'place' tiene al menos el formato mínimo de una URL
     if (!place || !place.includes('?')) {
       // Si 'place' no parece una URL válida, devuelve el valor original o un mensaje adecuado
-      return 'No se encontró información';
+      return place;
     }
     try {
       const url = new URL(place);
@@ -289,7 +291,7 @@ function CrudApp() {
     setMessage(messages[type])
     setTimeout(() => {
       setMessage('')
-    }, 700)
+    }, 1000)
   }
 
   // zoom image
@@ -367,7 +369,7 @@ function CrudApp() {
         <input
           type='text'
           name='place'
-          placeholder='Punto de encuentro'
+          placeholder='Calle y Calle | Dirección | Sitio Encuentro'
           value={formData.place} // Muestra solo la dirección ingresada
           onChange={handleChange}
           required
@@ -391,16 +393,16 @@ function CrudApp() {
 
         <button
           type='submit'
-          className={`submit-button ${message ? 'hidden' : ''}`}
+          className={`submit-button ${message ? 'hidden' : ''}{isEditing ? 'show' : '' }`}
         >
-          {isEditing ? 'Actualizar' : 'Agregar'}
+          {isEditing ? 'Editando Item... ACTUALIZAR' : 'AGREGAR'}
         </button>
         <span className={`message ${message ? 'show' : 'hidden'}`}>
           {message}
         </span>
       </form>
       {/* LISTA DE ITEMS COLUMNAS Y FILAS*/}
-      <DatesComponent items={data} onEdit={handleEdit} onDelete={handleDelete} />
+      <DatesComponent items={data} onEdit={handleEdit} onDelete={handleDelete} isEditing={isEditing} editingItemId={editingItemId} />
       {/* FOOTER */}
       < FooterComponent />
 

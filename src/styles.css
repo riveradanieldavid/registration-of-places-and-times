@@ -156,6 +156,8 @@ body {
 
 .message.show {
     opacity: 1;
+    background-color: greenyellow;
+    
 }
 
 .message.hide {
