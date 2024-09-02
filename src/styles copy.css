@@ -25,7 +25,7 @@ body {
 
 .crud-form {
     display: flex;
-    /* margin: 20px auto 20px; */
+    margin: 20px auto 20px;
     flex-direction: column;
     width: 270px;
     /* height: 13rem; */
@@ -75,7 +75,7 @@ body {
 .grid-container {
     display: grid;
     /* Seis columnas */
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 11rem;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     /* grid-template-columns: 8rem 8rem 1fr 1fr 1fr 1fr; */
     gap: 1px;
     padding: 0;
@@ -106,7 +106,7 @@ body {
 }
 
 .grid-edition-actions {
-    border: 3px solid red;
+    border: 5px solid red;
     border-radius: 5px;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
@@ -150,7 +150,7 @@ body {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    /* width: 225px !important; */
+    width: 225px !important;
     text-align: center;
     margin: 5px !important;
     display: none;
@@ -178,7 +178,7 @@ body {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    /* width: 265px !important; */
+    width: 265px !important;
     text-align: center;
     margin: 5px !important;
     -webkit-border-radius: 5px;
@@ -377,7 +377,7 @@ body {
 
 /****************** MODO TABLET ********************/
 
-@media(max-width: 990px) {
+@media(max-width: 1290px) {
     .crud-form {
         display: inline;
         margin: auto;
@@ -387,12 +387,6 @@ body {
         border-radius: 12px;
         bottom: 10px;
     }
-
-    .submit-button,
-    .editingButton {
-        font-size: 14px;
-    }
-
 }
 
 

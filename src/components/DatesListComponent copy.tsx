@@ -1,40 +1,16 @@
-﻿// @ts-nocheck
-
-// Importaciones
+﻿// Importaciones
 import React, { useState } from 'react';
 import '../App.css';
+import { DatesComponentProps } from "../interfaces/types";
 import '../styles.css';
-
-interface DatesComponentProps {
-    items: { id: number, date: string, time: string, meetingPoint: string }[];
-    onEdit: (item: { id: number, date: string, time: string, meetingPoint: string }) => void;
-    onDelete: (id: number) => void;
-}
-
-// INTERFACES
-// Definición de la interfaz para los datos del formulario
-interface FormData {
-    id: number | null
-    date: string
-    time: string
-    place: string // Dirección ingresada por el usuario
-    servant: string
-    territory: string
-}
-
-// Definición de la interfaz para los ítems de datos
-interface DataItem extends FormData {
-    id: number
-    placeLink: string // Enlace generado a Google Maps
-}
+import { formatTime } from "../utils/formatters";
+import { extractStreets } from "../utils/location";
 
 // FUNCION PRINCIPAL
-const DatesComponent: React.FC<DatesComponentProps> = ({ items, onEdit, onDelete, isEditing, editingItemId }) => {
-    // ESTADOS
+const DatesComponent: React.FC<DatesComponentProps> = ({ data, handleEdit, handleDelete, isEditing, editingItemId }) => {
+
     // Estado para manejar la fila expandida
     const [expandedRowId, setExpandedRowId] = useState<number | null>(null)
-
-
 
     // EXPANDED
     // Función para manejar la expansión de una fila
@@ -43,6 +19,7 @@ const DatesComponent: React.FC<DatesComponentProps> = ({ items, onEdit, onDelete
     }
 
     // VARIABLES Y FUNCIONES AUXILIARES
+
     // Obtener la fecha actual formateada
     const todaytiny = new Date()
         .toLocaleDateString('es-ES', {
@@ -56,80 +33,9 @@ const DatesComponent: React.FC<DatesComponentProps> = ({ items, onEdit, onDelete
     const today =
         todaytiny.charAt(0).toUpperCase() + todaytiny.slice(1).toLowerCase()
 
-    // FORMATEADORES
-    // Función para formatear la fecha
-    const formatDate = (date: string) => {
-        try {
-            const daysOfWeek = [
-                'Lunes',
-                'Martes',
-                'Miércoles',
-                'Jueves',
-                'Viernes',
-                'Sábado',
-                'Domingo'
-            ]
-            const dateObj = new Date(date)
-            const dayName = daysOfWeek[dateObj.getDay()]
-            const day = dateObj.getUTCDate()
-            const month = dateObj.getUTCMonth() + 1
-            const year = dateObj.getUTCFullYear()
-
-            // Verifica el nombre del día, el día, el mes y el año
-
-            // Capitalizar el primer carácter del nombre del día
-            const capitalizedDayName =
-                dayName.charAt(0).toUpperCase() + dayName.slice(1).toLowerCase()
-
-            // Función para formatear la hora
-            const formattedDate = `${capitalizedDayName} ${day
-                .toString()
-                .padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`
-            return formattedDate
-        } catch (error) {
-            console.error('Error en formatDate:', error)
-            return date // Devolver la fecha original en caso de error
-        }
-    }
-    // Función para revertir el formato de la hora
-    const revertDateFormat = (formattedDate: string) => {
-        const [, dayMonthYear] = formattedDate.split(' ')
-        const [day, month, year] = dayMonthYear.split('/')
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-    }
-    // Función para formatear la hora
-    const formatTime = (time: string) => {
-        return time
-    }
-    const revertTimeFormat = (formattedTime: string) => {
-        return formattedTime
-    }
-
-    // CALLES PUNTOS DE ENCUENTRO
-    // Función para extraer solo las calles ingresadas
-    const extractStreets = (place: string): string => {
-        // Verifica si 'place' tiene al menos el formato mínimo de una URL
-        if (!place || !place.includes('?')) {
-            // Si 'place' no parece una URL válida, devuelve el valor original o un mensaje adecuado
-            return place;
-        }
-        try {
-            const url = new URL(place);
-            const query = url.searchParams.get('query');
-            return query || 'No se encontró información';
-        } catch (error) {
-            console.error('Error al extraer calles:', error);
-            return 'No se encontró información';
-        }
-    }
-
-    // Función para crear el enlace de Google Maps
-    const createGoogleMapsLink = (place: string) => {
-        const formattedPlace = encodeURIComponent(place)
-        return `https://www.google.com/maps/search/?api=1&query=${formattedPlace}+, San Miguel, Buenos Aires, Argentina`
-    }
-
-
+    // GUARDA PREVIO DATO DE LA ITERACION MAP
+    // La variable prevDate se inicializa fuera de la función map, lo que significa que su valor es persistente durante toda la iteración de map. Es decir, su valor se mantiene entre cada ciclo de la iteración.
+    let prevDate = ''; // Inicializamos la fecha anterior
     // RETORNO DE LA FUNCION PRINCIPAL CrudApp
     return (
         // PRIMER DIV CONTAINER
@@ -144,9 +50,15 @@ const DatesComponent: React.FC<DatesComponentProps> = ({ items, onEdit, onDelete
                 <div className='grid-header2 grid-header'>Conductor</div>
                 <div className='grid-header2 grid-header'>Territorio</div>
                 <div className='grid-header2 grid-header'>Acciones</div>
+
                 {/* MAPEO DE data PARA MOSTRAR ITEMS */}
-                {items.map(item => {
-                    // Console log para depuración
+                {data.map(item => {
+                    // Compara la fecha del item actual con prevDate:
+                    // Aquí, item.date.trim() es la fecha del item actual, y se compara con prevDate (la fecha guardada del item anterior). Si son iguales, isSameDateAsPrevious será true, lo que significa que la fecha ya fue mostrada en el item anterior.
+                    const isSameDateAsPrevious = item.date.trim() === prevDate;
+                    // Actualizamos prevDate para la próxima iteración
+                    prevDate = item.date.trim();
+
                     // RETORNO MAPEO DE data
                     return (
                         <React.Fragment key={item.id}>
@@ -156,7 +68,8 @@ const DatesComponent: React.FC<DatesComponentProps> = ({ items, onEdit, onDelete
                                 className={`grid-item ${item.date.trim() === today ? 'highlight' : ''
                                     } ${expandedRowId === item.id ? 'selected-row' : ''}`}
                             >
-                                {item.date}
+                                {/* Solo mostramos la fecha si es diferente de la fecha anterior */}
+                                {!isSameDateAsPrevious && (item.date.trim() ? item.date.trim() : '')}
                                 {item.date.trim() === today ? <h3>HOY</h3> : ''}
                             </div>
                             {/* HORA */}
@@ -209,10 +122,10 @@ const DatesComponent: React.FC<DatesComponentProps> = ({ items, onEdit, onDelete
                                 className={`buttons-edit grid-item2 grid-item ${item.date.trim() === today ? 'highlight' : ''
                                     } ${expandedRowId === item.id ? 'selected-row' : ''}`}
                             >
-                                <button className='editionButton' onClick={() => onEdit(item.id)}>
+                                <button className='editionButton' onClick={() => handleEdit(item.id)}>
                                     {isEditing && editingItemId === item.id ? 'USTED ESTA EDITANDO ESTE ITEM' : 'Editar'}
                                 </button>
-                                <button className='editionButton' onClick={() => onDelete(item.id)}>Eliminar</button>
+                                <button className='editionButton' onClick={() => handleDelete(item.id)}>Eliminar</button>
                             </div>
                             {/* ITEMS EXPANDIBLES EN MODO TELEFONO*/}
                             {expandedRowId === item.id && (

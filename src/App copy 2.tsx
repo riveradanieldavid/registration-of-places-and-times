@@ -1,11 +1,14 @@
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+//@ts-nocheck
+// Importaciones
 import './App.css';
+import './styles.css';
+
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+
 import DatesComponent from './components/DatesListComponent';
 import FooterComponent from './components/FooterComponent';
 import HeaderComponent from './components/HeaderComponent';
-import TestOne from './components/TestingComponent';
 import { DataItem, FormData } from './interfaces/types';
-import './styles.css';
 import { formatDate, formatTime, revertDateFormat, revertTimeFormat } from './utils/formatters';
 import { createGoogleMapsLink, extractStreets } from './utils/location';
 
@@ -13,8 +16,10 @@ import { createGoogleMapsLink, extractStreets } from './utils/location';
 const DatesCrudApp = () => {
 
   // ESTADOS
+
   // Estado para almacenar los datos
   const [data, setData] = useState<DataItem[]>([])
+
   // Estado para almacenar los datos del formulario
   const [formData, setFormData] = useState<FormData>({
     id: null,
@@ -24,16 +29,80 @@ const DatesCrudApp = () => {
     servant: '',
     territory: ''
   })
+
+  // BUTTON AGREGAR
+  const [showFormAddItem, setShowFormAddItem] = useState<boolean>(false)
+
   // Estado para determinar si está en modo edición
   const [isEditing, setIsEditing] = useState<boolean>(false)
+
   // Estado para mostrar mensajes
   const [message, setMessage] = useState('')
+
   // Estado para determinar el ID del ítem en edición
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
 
-  // FUNCIONES DE EDICION
+  // EFECTOS SECUNDARIOS
 
-  // ADICION
+  // Efecto para cargar datos del archivo JSON
+  useEffect(() => {
+    fetch("/registration-of-places-and-times/data.json")
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Network response was not ok: ${response.statusText}`)
+        }
+        return response.json()
+      })
+      .then(jsonData => {
+        setData(jsonData)
+      })
+      .catch(err => {
+        console.error('Error loading JSON:', err.message)
+      })
+  }, [])
+  // console.log(data)
+
+  // Focus en formulario siempre
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    // Enfocar el input cuando se esté editando
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [editingItemId]);
+
+
+
+
+  // Evento para salir del modo edición si se hace clic fuera del formulario
+  const formRef = useRef<HTMLFormElement | null>(null)
+  const buttonAddRef = useRef<HTMLFormElement | null>(null)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Si se hace clic fuera del formulario y no en el botón "Editar", cerrar el modo edición
+      if (
+        formRef.current &&
+        !formRef.current.contains(event.target as Node)
+      ) {
+        setIsEditing(false);
+        setMessage(false);
+      }
+/*       if (
+        formRef.current &&
+        !formRef.current.contains(event.target as Node)
+      ) {
+        buttonAddRef.current &&
+          buttonAddRef.current.contains(event.target as Node)
+      }
+ */    };
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  // MANEJADORES DE EVENTOS DE FORMULARIO
+
   // Manejar cambios en el formulario
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -43,26 +112,7 @@ const DatesCrudApp = () => {
       JSON.stringify({ ...formData, [e.target.name]: e.target.value })
     )
   }
-  // EDICION
-  // Función para manejar la edición de un ítem
-  const handleEdit = (id: number) => {
-    setEditingItemId(id); // Establece la ID del ítem en edición
-    // Aquí iría tu lógica adicional para editar el ítem...
-    const itemToEdit = data.find(item => item.id === id)
-    if (itemToEdit) {
-      const originalDate = revertDateFormat(itemToEdit.date)
-      const originalTime = revertTimeFormat(itemToEdit.time)
-      setFormData({
-        ...itemToEdit,
-        date: originalDate,
-        time: originalTime,
-        place: extractStreets(itemToEdit.place)
-      })
-      setIsEditing(true);
-    }
-  }
 
-  // GUARDAR ELIMINAR DATOS
   // Función para manejar el envío del formulario
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -105,6 +155,39 @@ const DatesCrudApp = () => {
     }
     console.log(updatedData)
   }
+
+  // VARIABLES Y FUNCIONES AUXILIARES
+  // MENSAJES DE ACCIONES DE EDICION
+  // Función para mostrar mensajes de acción de edición
+  const showMessage = (type: string) => {
+    const messages: { [key: string]: string } = {
+      updated: 'ITEM ACTUALIZADO',
+      added: 'ITEM DUPLICADO.'
+    }
+    setMessage(messages[type])
+    // setTimeout(() => {
+    //   setMessage('')
+    // }, 70000)
+  }
+
+  // Función para manejar la edición de un ítem
+  const handleEdit = (id: number) => {
+    setEditingItemId(id); // Establece la ID del ítem en edición
+    // Aquí iría tu lógica adicional para editar el ítem...
+    const itemToEdit = data.find(item => item.id === id)
+    if (itemToEdit) {
+      const originalDate = revertDateFormat(itemToEdit.date)
+      const originalTime = revertTimeFormat(itemToEdit.time)
+      setFormData({
+        ...itemToEdit,
+        date: originalDate,
+        time: originalTime,
+        place: extractStreets(itemToEdit.place)
+      })
+      setIsEditing(true);
+    }
+  }
+
   // Función para manejar la eliminación de un ítem
   const handleDelete = (id: number) => {
     const itemToDelete = data.find(item => item.id === id)
@@ -121,73 +204,35 @@ const DatesCrudApp = () => {
     }
   }
 
-  // EFECTOS SECUNDARIOS
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Efecto para cargar datos del archivo JSON
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   useEffect(() => {
-    fetch("/registration-of-places-and-times/data.json")
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok: ${response.statusText}`)
-        }
-        return response.json()
-      })
-      .then(jsonData => {
-        setData(jsonData)
-      })
-      .catch(err => {
-        console.error('Error loading JSON:', err.message)
-      })
-  }, [])
-  // Focus en formulario siempre
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  useEffect(() => {
-    // Enfocar el input cuando se esté editando
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [editingItemId]);
-  // Evento para salir del modo edición si se hace clic fuera del formulario
-  const formRef = useRef<HTMLFormElement | null>(null);
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      // Si se hace clic fuera del formulario y no en el botón "Editar", cerrar el modo edición
-      if (
-        formRef.current &&
-        !formRef.current.contains(event.target as Node)
-      ) {
-        setIsEditing(false);
-        setMessage('');
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeModal();
       }
     };
-    document.addEventListener('click', handleClickOutside);
+
+    document.addEventListener('keydown', handleKeyDown);
+
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
-  // VARIABLES Y FUNCIONES AUXILIARES
-
-  // Función para mostrar mensajes de acción de edición
-  const showMessage = (type: string) => {
-    const messages: { [key: string]: string } = {
-      updated: 'ITEM ACTUALIZADO',
-      added: 'ITEM DUPLICADO.'
-    }
-    setMessage(messages[type])
-    // setTimeout(() => {
-    //   setMessage('')
-    // }, 70000)
-  }
-
+  // RETORNO DE LA FUNCION PRINCIPAL DatesCrudApp
   return (
+    // PRIMER DIV CONTAINER
     <div className='crud-app-container'>
 
       {/* HEADER */}
       <HeaderComponent />
-      <TestOne />
-
       {/* FORM */}
+      {/* CRUD */}
+
       {isEditing &&
         <form
           ref={formRef}
@@ -245,7 +290,6 @@ const DatesCrudApp = () => {
           {/* </span> */}
         </form>
       }
-
       {/* LISTA DE ITEMS COLUMNAS Y FILAS*/}
       <DatesComponent
         data={data}
@@ -256,7 +300,11 @@ const DatesCrudApp = () => {
         editingItemId={editingItemId}
         formRef={formRef}
         handleChange={handleChange}
+        buttonAddRef={buttonAddRef}
         message={message}
+        isModalOpen={isModalOpen}
+        openModal={openModal}
+        closeModal={closeModal}
       />
 
       {/* FOOTER */}

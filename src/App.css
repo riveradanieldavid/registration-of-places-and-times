@@ -1,0 +1,86 @@
+/* Contenedor general */
+.container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Estilo de la grilla de ítems */
+.items-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr 1fr; /* 4 columnas: Fecha, Hora, Nombre, Acciones */
+    gap: 10px;
+    margin-top: 20px;
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Cabecera de la tabla */
+.items-header {
+    display: contents; /* Alinea las cabeceras con las columnas */
+    font-weight: bold;
+}
+
+/* Cada ítem individual */
+.item {
+    display: contents; /* Alinea los ítems con las columnas */
+}
+
+.item span,
+.item input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 3px;
+    text-align: center;
+}
+
+/* Botones de acción */
+.item-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.item-actions button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.item-actions button:hover {
+    background-color: #0056b3;
+}
+
+/* Mantener tamaño fijo para todos los ítems */
+.item input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Estilo para el formulario */
+form input,
+form button {
+    margin-bottom: 10px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+form button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #218838;
+}
