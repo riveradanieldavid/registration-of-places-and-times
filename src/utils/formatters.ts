@@ -47,7 +47,7 @@ export const revertDateFormat = (formattedDate: string) => {
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
 }
 
-// Obtener la fecha actual formateada, Sirve?
+// Obtener la fecha actual formateada
 export const todaytiny = new Date()
     .toLocaleDateString('es-ES', {
         weekday: 'long',
