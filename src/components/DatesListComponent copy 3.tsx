@@ -6,7 +6,6 @@ import { extractStreets } from "../utils/location";
 import ExpandedComponent from "./ExpandedComponent";
 
 import "../styles.css";
-import "../styles.css";
 
 // FUNCION PRINCIPAL
 const DatesComponent: React.FC<DatesComponentProps> = ({

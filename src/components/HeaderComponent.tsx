@@ -1,6 +1,5 @@
-﻿// @ts-nocheck
+﻿import React, { useEffect, useState } from "react";
 
-import React, { useEffect, useState } from "react";
 import territoryImageFull from "../assets/territoryImage.jpg";
 import territoryImagePhone from "../assets/territoryImagePhone.jpg";
 

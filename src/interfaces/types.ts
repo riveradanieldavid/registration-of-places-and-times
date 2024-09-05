@@ -32,14 +32,14 @@ export interface FormData {
 
 export interface Item {
     id: number;   // Identificador único del ítem.
-    name: string; // Nombre o descripción del ítem.
     date: string; // Fecha asociada al ítem.
     time: string; // Hora asociada al ítem.
+    place: string;
     servant: string;
     territory: string;
 }
 export interface ExpandedComponentProps {
-    expandedRowId: number;  // Tipo de dato depende de cómo manejas los IDs
+    expandedRowId: number | null;  // Tipo de dato depende de cómo manejas los IDs
     item: Item;                      // Objeto que representa la fila expandida
     today: string;                   // Fecha de hoy, tipada como string
 }

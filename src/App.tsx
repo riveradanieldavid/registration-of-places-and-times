@@ -1,18 +1,15 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
-import "./App.css";
+
 import DatesComponent from "./components/DatesListComponent";
 import FooterComponent from "./components/FooterComponent";
 import HeaderComponent from "./components/HeaderComponent";
-import TestOne from "./components/TestingComponent";
+// import TestOne from "./components/TestingComponent";
 import { DataItem, FormData } from "./interfaces/types";
-import "./styles.css";
-import {
-  formatDate,
-  formatTime,
-  revertDateFormat,
-  revertTimeFormat
-} from "./utils/formatters";
+import { formatDate, formatTime, revertDateFormat, revertTimeFormat } from "./utils/formatters";
 import { createGoogleMapsLink, extractStreets } from "./utils/location";
+
+import "./App.css";
+import "./styles.css";
 
 // FUNCION PRINCIPAL
 const DatesCrudApp = () => {
@@ -193,7 +190,7 @@ const DatesCrudApp = () => {
     <div className="crud-app-container">
       {/* HEADER */}
       <HeaderComponent />
-      <TestOne />
+      {/* <TestOne /> */}
 
       {/* FORM */}
       {isEditing && (
