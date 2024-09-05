@@ -25,7 +25,7 @@
 .item {
     display: contents; /* Alinea los ítems con las columnas */
 }
-
+/* 
 .item span,
 .item input {
     padding: 10px;
@@ -34,7 +34,7 @@
     border-radius: 3px;
     text-align: center;
 }
-
+ */
 /* Botones de acción */
 .item-actions {
     display: flex;

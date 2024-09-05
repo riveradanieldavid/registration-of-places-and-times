@@ -1,24 +1,24 @@
 ﻿import React, { useEffect, useState } from "react";
 
 // import TestOne from "../components/TestingComponent";
-import { DatesComponentProps } from "../interfaces/types";
+import ExpandedComponent from "./ExpandedComponent";
 import { formatTime, today } from "../utils/formatters";
 import { extractStreets } from "../utils/location";
-import ExpandedComponent from "./ExpandedComponent";
+import { DatesComponentProps } from "../interfaces/types";
 
 // import "../App.css";
 // import "../styles.css";
 
 // FUNCION PRINCIPAL
 const DatesComponent: React.FC<DatesComponentProps> = ({
-  // data,
+  data,
+  editingItemId,
+  isEditing,
+  buttonRef,
+  message,
   handleSubmit,
   handleEdit,
-  // handleDelete,
-  isEditing,
-  editingItemId,
-  message,
-  buttonRef
+  handleDelete
 }) => {
   // ESTADOS
   // Estado para almacenar los datos
@@ -230,7 +230,7 @@ const DatesComponent: React.FC<DatesComponentProps> = ({
         <div className="expand-header grid-header">Acciones</div>
 
         {/* MAPEO DATOS*/}
-        {items.map(item => {
+        {data.map(item => {
           // Compara la fecha del item actual con prevDate:
           // Aquí, item.date.trim() es la fecha del item actual, y se compara con prevDate (la fecha guardada del item anterior). Si son iguales, isSameDateAsPrevious será true, lo que significa que la fecha ya fue mostrada en el item anterior.
           const isSameDateAsPrevious = item.date.trim() === prevDate;
@@ -246,30 +246,35 @@ const DatesComponent: React.FC<DatesComponentProps> = ({
                   // MODO EDICION
                   <>
                     <input
+                      className="grid-item"
                       type="date"
                       name="date"
                       value={item.date}
                       onChange={e => handleItemInputChange(e, item.id)}
                     />
                     <input
+                      className="grid-item"
                       type="time"
                       name="time"
                       value={item.time}
                       onChange={e => handleItemInputChange(e, item.id)}
                     />
                     <input
+                      className="grid-item"
                       type="text"
                       name="place"
                       value={item.place}
                       onChange={e => handleItemInputChange(e, item.id)}
                     />
                     <input
+                      className="grid-item"
                       type="text"
                       name="servant"
                       value={item.servant}
                       onChange={e => handleItemInputChange(e, item.id)}
                     />
                     <input
+                      className="grid-item"
                       type="text"
                       name="territory"
                       value={item.territory}
@@ -312,12 +317,12 @@ const DatesComponent: React.FC<DatesComponentProps> = ({
                         item.date.trim() === today ? "highlight" : ""
                       } ${expandedRowId === item.id ? "selected-row" : ""}`}
                     >
-                      {/* Aquí mestras solo las calles */}
+                      {/* Aquí renderizas solo las calles */}
                       {extractStreets(item.place)}
-                      {/* Aquí muestras el enlace con la leyenda */}
+                      {/* Aquí renderizas el enlace con la leyenda */}
                       <br />
                       <a
-                        href={item.territory}
+                        href={item.placeLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -409,11 +414,11 @@ const DatesComponent: React.FC<DatesComponentProps> = ({
                             ? "editingButton"
                             : ""
                         }`}
-                        onClick={() => handleEditItem(item)}
-                        // onClick={e => {
-                        //   e.stopPropagation();
-                        //   handleEdit(item.id);
-                        // }}
+                        // onClick={() => handleEditItem(item)}
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleEdit(item.id);
+                        }}
 
                         // disabled={isEditing && editingItemId !== item.id}
                       >
@@ -437,7 +442,8 @@ const DatesComponent: React.FC<DatesComponentProps> = ({
                       {/* BOTON ELIMINAR */}
                       <button
                         className="editionButton"
-                        onClick={() => handleDeleteItem(item.id)}
+                        onClick={() => handleDelete(item.id)}
+                        // onClick={() => handleDeleteItem(item.id)}
                       >
                         ELIMINAR
                       </button>

@@ -12,12 +12,12 @@ export interface DatesComponentProps {
     data: DataItem[];
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     handleEdit: (id: number) => void;
-    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    // handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleDelete: (id: number) => void;
     isEditing: boolean;
     editingItemId: number | null;
     message: string;
-    formRef: React.RefObject<HTMLFormElement>;
+    // formRef: React.RefObject<HTMLFormElement>;
     buttonRef: React.RefObject<HTMLButtonElement>;
 }
 

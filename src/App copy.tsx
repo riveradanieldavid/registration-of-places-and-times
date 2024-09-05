@@ -1,16 +1,14 @@
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 
-import "./App.css";
 import DatesComponent from "./components/DatesListComponent";
 import FooterComponent from "./components/FooterComponent";
 import HeaderComponent from "./components/HeaderComponent";
 import { DataItem, FormData } from "./interfaces/types";
-import "./styles.css";
 import {
-  useAutoFocus,
   useClickOutsideToClose,
-  useFetchData
-} from "./utils/effects";
+  useFetchData,
+  useAutoFocus
+} from "./utils/effects"; // Importas la función desde efectos.ts
 import {
   formatDate,
   formatTime,
@@ -19,6 +17,8 @@ import {
 } from "./utils/formatters";
 import { createGoogleMapsLink, extractStreets } from "./utils/location";
 import { useMessage } from "./utils/messages";
+import "./App.css";
+import "./styles.css";
 
 // FUNCION PRINCIPAL
 const DatesCrudApp = () => {
