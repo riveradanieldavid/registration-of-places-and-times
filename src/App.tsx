@@ -1,28 +1,20 @@
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 
-import "./App.css";
 import DatesComponent from "./components/DatesListComponent";
 import FooterComponent from "./components/FooterComponent";
 import HeaderComponent from "./components/HeaderComponent";
 import { DataItem, FormData } from "./interfaces/types";
-import "./styles.css";
-import {
-  useAutoFocus,
-  useClickOutsideToClose,
-  useFetchData
-} from "./utils/effects";
-import {
-  formatDate,
-  formatTime,
-  revertDateFormat,
-  revertTimeFormat
-} from "./utils/formatters";
+import { useAutoFocus, useClickOutsideToClose, useFetchData } from "./utils/effects";
+import { formatDate, formatTime, revertDateFormat, revertTimeFormat } from "./utils/formatters";
 import { createGoogleMapsLink, extractStreets } from "./utils/location";
 import { useMessage } from "./utils/messages";
 
-// FUNCION PRINCIPAL
+import "./App.css";
+import "./styles.css";
+
+// ***************************COMPONENTE***************************
 const DatesCrudApp = () => {
-  // ESTADOS
+  //*************************** ESTADOS***************************
   // Estado para almacenar los datos
   const [data, setData] = useState<DataItem[]>([]);
   // Estado para almacenar los datos del formulario
@@ -36,22 +28,14 @@ const DatesCrudApp = () => {
   });
   // Estado para determinar si está en modo edición
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  // Estado para mostrar mensajes
   // Estado para determinar el ID del ítem en edición
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
 
-  // Funciones, hooks, effects modularizados
-  // Effects useReferrer
-  const formRef = useRef<HTMLFormElement | null>(null);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  // Usa el hook para gestionar mensajes
-  const { message, showMessage } = useMessage();
-  // useClickOutsideToClose
-  // const [message, setMessage] = useState("");
-
-  // FUNCIONES DE EDICION
+  //*************************** FORM CRUD***************************
   // Manejar cambios en el formulario
+  // EXTRAE VAORES DE inputs y  LOS GUARDA EN formData
+  // EXTRAE CALLES INGESADAS DEL LINK FORMADO
+  // ALMACENA DATOS EN localStorage
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     localStorage.setItem(
@@ -60,8 +44,14 @@ const DatesCrudApp = () => {
       JSON.stringify({ ...formData, [e.target.name]: e.target.value })
     );
   };
-
   // Función para manejar el envío del formulario
+  // FORMATEA FECHA, HORA Y CREA ENLACE DE GOOGLE MAPS
+  // GUARDA EN updatedData LA EDICION DE data del id SELECIONADO
+  // O GUARDA DATOS NUEVOS INGRESADOS ALMACENADOS EN ...formData, MAS ...data
+  // updateData SE GUARDA EN data
+  // SALE DE MODO EDICION
+  // DATOS SE ALMACENAN EN localStorage
+  // SI ESTUVO EN MODO EDICION SE MUESTRAN MENSAJES DE ACTUALIZACION
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formattedDate = formatDate(formData.date);
@@ -103,11 +93,13 @@ const DatesCrudApp = () => {
     }
     console.log(updatedData);
   };
-
   // Función para manejar la edición de un ítem
+  // EN itemToEdit GUARDA EL id DEL ITEM A EDITAR
+  // SI itemToEdit PONE EN formData LOS DATOS DEL ITEM A EDITAR
+  // MARCA isEditing COMO EDITABLE
+  // LOS inputs QUEDAN CON LOS DATOS DEL ITEM A EDITAR
   const handleEdit = (id: number) => {
     setEditingItemId(id); // Establece la ID del ítem en edición
-    // Aquí iría tu lógica adicional para editar el ítem...
     const itemToEdit = data.find(item => item.id === id);
     if (itemToEdit) {
       const originalDate = revertDateFormat(itemToEdit.date);
@@ -121,7 +113,6 @@ const DatesCrudApp = () => {
       setIsEditing(true);
     }
   };
-
   // Función para manejar la eliminación de un ítem
   const handleDelete = (id: number) => {
     const itemToDelete = data.find(item => item.id === id);
@@ -138,25 +129,31 @@ const DatesCrudApp = () => {
     }
   };
 
-  // EFECTOS SECUNDARIOS
-  // Llamas a la función de efectos que contiene el useEffect
+  //*************************** EFECTOS***************************
+  // fetch DATA ITEMS
   useFetchData(setData);
+  // Hook useMessage para mostrar mensajes  // useClickOutsideToClose establece showMessage null
+  const { message, showMessage } = useMessage();
+  // useClickOutsideToClose original no funcional con setMessage
+  // const [message, setMessage] = useState("");
 
-  // Llamada a la función para manejar el clic fuera del formulario
+  // useClickOutsideToClose cierra formulario y mensajes de botones de edición
+  const formRef = useRef<HTMLFormElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   useClickOutsideToClose(formRef, buttonRef, setIsEditing, showMessage);
 
-  // Usa el hook para autoenfocar el input
+  //Hook autoenfoca el input
   useAutoFocus(inputRef, isEditing);
 
-  // VARIABLES Y FUNCIONES AUXILIARES
-
+  //*************************** RENDERIZADO***************************
   return (
     <div className="crud-app-container">
-      {/* HEADER */}
+      {/**************************** HEADER****************************/}
       <HeaderComponent />
       {/* <TestOne /> */}
 
-      {/* FORM */}
+      {/* ***************************FORM ****************************/}
       {isEditing && (
         <form ref={formRef} className="crud-form" onSubmit={handleSubmit}>
           <input
@@ -212,7 +209,7 @@ const DatesCrudApp = () => {
         </form>
       )}
 
-      {/* LISTA DE ITEMS COLUMNAS Y FILAS*/}
+      {/* ***************************LISTA DE ITEMS*************************** */}
       <DatesComponent
         data={data}
         editingItemId={editingItemId}
@@ -222,11 +219,9 @@ const DatesCrudApp = () => {
         handleEdit={handleEdit}
         handleSubmit={handleSubmit}
         handleDelete={handleDelete}
-        // handleChange={handleChange}
-        // formRef={formRef}
       />
 
-      {/* FOOTER */}
+      {/* ***************************FOOTER ****************************/}
       <FooterComponent />
     </div>
   );

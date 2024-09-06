@@ -26,7 +26,7 @@ export const useClickOutsideToClose = (
     formRef: React.RefObject<HTMLFormElement>,
     buttonRef: React.RefObject<HTMLButtonElement>,
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
-    setMessage: React.Dispatch<React.SetStateAction<string>>
+    showMessage: React.Dispatch<React.SetStateAction<string>>
 ) => {
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -36,7 +36,7 @@ export const useClickOutsideToClose = (
                 (buttonRef.current && !buttonRef.current.contains(event.target as Node))
             ) {
                 setIsEditing(false);
-                setMessage("");
+                showMessage("");
             }
         };
         // Añadir el listener al documento

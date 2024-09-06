@@ -1,23 +1,24 @@
 ﻿import React, { useEffect, useState } from "react";
 
 // import TestOne from "../components/TestingComponent";
-import { DatesComponentProps } from "../interfaces/types";
+import ExpandedComponent from "./ExpandedComponent";
 import { formatTime, today } from "../utils/formatters";
 import { extractStreets } from "../utils/location";
-import ExpandedComponent from "./ExpandedComponent";
+import { DatesComponentProps } from "../interfaces/types";
+
 // import "../App.css";
 // import "../styles.css";
 
 // FUNCION PRINCIPAL
 const DatesComponent: React.FC<DatesComponentProps> = ({
   data,
+  editingItemId,
+  isEditing,
+  buttonRef,
+  message,
   handleSubmit,
   handleEdit,
-  handleDelete,
-  isEditing,
-  editingItemId,
-  message,
-  buttonRef,
+  handleDelete
 }) => {
   // ESTADOS
   // Estado para almacenar los datos

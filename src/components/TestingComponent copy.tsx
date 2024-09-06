@@ -77,7 +77,7 @@ const TestOne: React.FC = () => {
     setItems(prevItems => prevItems.filter(item => item.id !== id));
   };
 
-  // *********************INPUTS DE LA LISTA EDITABLES ***************************
+  // *********************INPUTS EDITABLES SOBRE LA LISTA***************************
   // Guarda los cambios en tiempo real mientras el usuario edita un ítem directamente en la lista.
   // EXTRAE DE LA LISTA DE ITEMS, NO DEL FORMULARIO, LOS VALORES DEL input, name y value
   // GUARDA EN TIEMPO REAL LOS VALORES DEL input, name y value ORDENADOS POR FECHA Y HORA  EN items
